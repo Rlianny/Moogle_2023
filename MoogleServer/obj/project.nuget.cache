@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "Xc2NvJW5+YgvUhylA9CffXwjbJLPJm/nnW0UXLnQHndhysKU+nxB54gZ72abPg/g+s7x7ktomK2uv6bwYiyhkg==",
+  "success": true,
+  "projectFilePath": "/home/lianny/Descargas/moogle_first_project-main/MoogleServer/MoogleServer.csproj",
+  "expectedPackageFiles": [
+    "/home/lianny/.nuget/packages/microsoft.netcore.app.ref/7.0.15/microsoft.netcore.app.ref.7.0.15.nupkg.sha512",
+    "/home/lianny/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.15/microsoft.aspnetcore.app.ref.7.0.15.nupkg.sha512",
+    "/home/lianny/.nuget/packages/microsoft.netcore.app.host.linux-x64/7.0.15/microsoft.netcore.app.host.linux-x64.7.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

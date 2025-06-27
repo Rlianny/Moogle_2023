@@ -1,0 +1,11 @@
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/bin/Debug/net7.0/MoogleEngine.deps.json
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/bin/Debug/net7.0/MoogleEngine.dll
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/bin/Debug/net7.0/MoogleEngine.pdb
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.GeneratedMSBuildEditorConfig.editorconfig
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.AssemblyInfoInputs.cache
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.AssemblyInfo.cs
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.csproj.CoreCompileInputs.cache
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.dll
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/refint/MoogleEngine.dll
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/MoogleEngine.pdb
+/home/lianny/Descargas/moogle_first_project-main/MoogleEngine/obj/Debug/net7.0/ref/MoogleEngine.dll
