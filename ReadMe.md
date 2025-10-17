@@ -2,102 +2,148 @@
 
 ![](Moogle!.png)
 
-> Proyecto de Programación I.
-> Facultad de Matemática y Computación - Universidad de La Habana.
-> Cursos 2023-2024.
+> **Information Retrieval Project**
+> Computer Science Faculty - University of Havana
+> Academic Year 2023-2024
 
-**Moogle!** es una aplicación *totalmente original* cuyo propósito es buscar inteligentemente un texto en un conjunto de documentos.
+**Moogle!** is an information retrieval application designed for **intelligently searching text within a corpus of documents**, leveraging the **Vector Space Model** (VSM).
 
-Es una aplicación web, desarrollada con tecnología .NET Core 7.0, específicamente usando Blazor como *framework* web para la interfaz gráfica, y en el lenguaje C#.
-La aplicación está dividida en dos componentes fundamentales:
+This is a web application developed with **.NET Core 7.0** using **C#**. The graphical interface utilizes the **Blazor** web framework.
 
-- `MoogleServer` es un servidor web que renderiza la interfaz gráfica y sirve los resultados.
-- `MoogleEngine` es una biblioteca de clases donde está implementada la lógica del algoritmo de búsqueda.
+The application is fundamentally divided into two components:
 
-**Índice**
+-   `MoogleServer`: The web server component that renders the graphical interface and delivers search results.
+-   `MoogleEngine`: A class library containing the core logic for the search algorithm and information retrieval engine.
 
-1. [Sobre la búsqueda](#id1)
-2. [Flujo de Funcionamiento](#id2)
-3. [Arquitectura básica](#id3)
-4. [Similaridad producto escalar](#id4)
-5. [Similaridad coseno](#id5)
-6. [Sobre la Ingeniería de Software](#id6)
-7. [Ejemplos del proyecto en funcionamiento](#id7)
-8. [Fuentes que utilicé](#id8)
+## Table of Contents
 
+1. [Setup and Run](#setup-and-run)
+2. [Key Search Features](#key-search-features)
+3. [Workflow](#workflow)
+4. [Basic Architecture: Vector Space Model](#basic-architecture-vector-space-model)
+5. [Similarity Metric: Cosine Similarity](#similarity-metric-cosine-similarity)
+6. [Core Engine Components](#core-engine-components)
+7. [Examples](#examples)
+8. [Author](#author)
 
+---
 
-# Sobre la búsqueda <a name = "id1"> </a>
+## Setup and Run
 
-#### Necesitas tener instaldo algún navegador y tener a dotnet disponible, o equivalente a esto tener .NET CORE 7.0 instalado, para ejecutarlo te debes ubicar en la carpeta del proyecto y ejecutar en la terminal de Linux:
+To execute the project, you need a web browser installed and **.NET Core 7.0** or a compatible runtime environment available on your system.
+
+**To run the application:**
+
+1.  Navigate to the project's root folder in a **Linux** terminal or **WSL** (Windows Subsystem for Linux).
+2.  Execute the following command:
 
 ```cs
 make dev
-```
+````
 
-#### Si estás en Windows, debes poder hacer lo mismo desde la terminal del WSL (Windows Subsystem for Linux), el comando ultimate para ejecutar la aplicación es (desde la carpeta raíz del proyecto):
+Alternatively, the ultimate command (from the root directory) is:
 
 ```cs
 dotnet watch run --project MoogleServer
 ```
 
-#### Para realizar una búsqueda, solo se necesita introducir una frase en el cuadro de búsqueda y hacer click sobre el botón buscar o bien, presionar la tecla Enter.
+**To perform a search:** Simply enter a phrase into the search box and click the **Search** button or press the **Enter** key.
 
-#### Implementamos la búsqueda de la manera más inteligente posible, de forma tal que el usuario no necesita limitarse a los documentos donde aparece exactamante la frase introducida por el usuario. 
+-----
 
- #### Aquí van algunos requisitos que debe cumplir esta búsqueda:
+## Key Search Features
 
-- En primer lugar, el usuario puede buscar no solo una palabra sino en general una frase cualquiera.
-- Si no aparecen todas las palabras de la frase en un documento, pero al menos aparecen algunas, este documento también será devuelto, pero con una relevancia menor mientras menos palabras aparezcan.
-- El orden en que aparezcan en el documento los términos de la consulta en general no importa, ni siquiera que aparezcan en lugares totalmente diferentes del documento.
-- De la misma forma, si un documento tiene más términos de la consulta que otro, en general tiene una mayor relevancia (a menos que sean términos menos relevantes).
-- Algunas palabras excesivamente comunes como las preposiciones, conjunciones, etc., serán ignoradas por completo ya que aparecerán en la inmensa mayoría de los documentos. Este requisito es funcional dentro de un conjunto de archivos en un mismo idioma, ya que está programado para que se haga de forma automática, o sea, no hay una lista cableada de palabras a ignorar, sino que se computan de los documentos.
+The search functionality is designed for intelligent retrieval, meaning the user is **not limited to documents containing the exact phrase**.
 
-# Flujo de Funcionamiento <a name = "id2"> </a>
-#### Al iniciar el servidor , este crea una instancia de Searcher el cual carga los Documentos  y los procesa individualmente para obtener los datos relevantes sobre ellos, tales como su nombre, ruta y frecuencia de sus términos, estos luego son utilizados para crear un diccionario que contiene todos los términos del corpus textual (los documentos), con esto se calcula por cada término de cada documento su frecuencia inversa o IDF y se utiliza esta métrica para normalizar la frecuencia del término en el documento (TF) y asi definir la relevancia de cada uno en el documento y en el corpus, estos valores son almacenados para utilizarse en las búsquedas.
+  - The user can search using an entire phrase, not just single words.
+  - **Partial Matches:** If a document only contains a subset of the query terms, it will still be returned, but with a proportionally lower relevance score.
+  - **Term Order and Proximity:** The order or proximity of the terms within the document generally does not matter.
+  - **Term Count:** Documents with more query terms tend to have a higher relevance score (unless those terms are less relevant overall).
+  - **Stop Word Filtering:** Extremely common words (e.g., prepositions, conjunctions) are automatically ignored. This process is not based on a hardcoded list but is **computed dynamically** from the document corpus to identify and discard terms with high document frequency.
 
-#### Cuando un usuario realiza una consulta mediante la interfaz gráfica esta pasa al servidor donde se procesan los datos introducidos por el usuario tales como: separar y procesar los terminos y calcular a cada uno de ellos su relevancia de la misma manera que se efectuó con cada documento del corpus. Tras desarrollarlo se procede a reducir el espacio de búsqueda mediante el cálculo de la relevancia o score de cada documento respecto al query, esto se cubre utilizndo la distancia coseno entre vectores la cual es una medida de similitud entre vectores, luego de calcular todos los scores , se organiza la lista de documentos según su score de mayor a menor y se devuelven al usuario, si hubo alguna palabra que no se pudo encontrar no será devuelto ningún resultado y el usuario debrá realizar una nueva búsqueda.
+-----
 
-# Arquitectura básica <a name = "id3"> </a>
-#### Este proyecto utiliza una implementación del *modelo vectorial de recuperación de la información*. Este modelo tiene su base en el álgebra lineal multidimensional, y onsite en modelar los documentos y la consulta como vectores en un espacio donde cada componente del vector representa el grado de relevancia de un término, la dimension de este espacio sera igual a la cantidad de términos distintos que existan en el corpus de documentos. Para medir la relevancia se utilizó los pesos TF-IDF, TF significa Term Frequency o frecuencia del término en español y es la cantidad de veces que un término aparece en un documento dado dividido por el número total de palabras en un documento, IDF significa Inverse Document Frecuency o Frecuencia inversa de documento en español y se calcula con la siguiente fórmula Log10(n/d), donde n es la cantidad total de documentos y d la cantidad de documentos es los que aparece el término, en caso de que el término no aparezca en ningún documento el valor del IDF es 0. La multiplicación de estos dos valores representa la relevancia del término en los documentos. Los valores de relevancia guardan en las componentes de los vectores de los documentos y la consulta como medida final de la relevancia de cada término.
-#### Una vez modelado el sistema vectorial con la relevancia de cada término, solo nos queda por determinar el grado de similitud entre la consulta y los documentos 
-#### El modo más simple de calcular la similitud entre una consulta y un documento, utilizando el modelo vectorial, es realizar el producto escalar de los vectores que los representan. En esa ecuación se incluye la normalización de los vectores, a fin de obviar distorsiones producidas por los diferentes tamaños de los documentos. El índice de similitud más usado es el coseno del ángulo formado por ambos vectores. 
-#### Para una consulta q, el índice de similitud con un documento Di es:
+## Workflow
 
-# Similaridad producto escalar <a name = "id4"> </a>
+The system operates in two main phases: **Indexing** and **Query Processing**.
+
+### Indexing (Server Startup)
+
+Upon server initialization, an instance of a `Searcher` object is created. This object performs the following steps:
+
+1.  **Document Loading:** Loads the documents and extracts relevant metadata (name, path, term frequency).
+2.  **Corpus Dictionary:** Creates a dictionary of all unique terms across the entire document corpus.
+3.  **TF-IDF Calculation:** Computes the **Inverse Document Frequency (IDF)** for every term in the corpus. This metric is then used to normalize the **Term Frequency (TF)** in each document, yielding the **TF-IDF** weights. These weights define the relevance of each term within the document and the corpus and are stored for subsequent searches.
+
+### Query Processing (User Search)
+
+When a user submits a query via the interface:
+
+1.  **Query Term Processing:** The query is processed similarly to the documents (term separation, tokenization, and TF-IDF calculation) to create a **query vector**.
+2.  **Scoring (Similarity):** The search space is ranked by calculating the **relevance score** (*score*) of each document against the query. This is achieved using the **Cosine Similarity** between the document vectors and the query vector.
+3.  **Result Retrieval:** The list of documents is sorted by their score (highest to lowest) and returned to the user.
+4.  **No Results:** If none of the query terms are found in the corpus, no results are returned.
+
+-----
+
+## Basic Architecture: Vector Space Model
+
+This project implements the **Vector Space Model (VSM)** for information retrieval. VSM is based on multidimensional linear algebra, modeling both documents ($D_i$) and the query ($Q$) as vectors in a space where each dimension corresponds to a unique term in the corpus.
+
+### Term Weighting: TF-IDF
+
+The components of these vectors represent the degree of relevance of a term, measured using **TF-IDF** weights:
+
+  - **Term Frequency (TF):** The number of times a term appears in a document divided by the total number of words in that document.
+  - **Inverse Document Frequency (IDF):** Calculated as $\log_{10}(N/D)$, where $N$ is the total number of documents in the corpus and $D$ is the number of documents in which the term appears. If a term does not appear in any document, its IDF is 0.
+
+The final relevance weight for a term in a document or query is the product of these two values ($\text{TF} \times \text{IDF}$).
+
+-----
+
+## Similarity Metric: Cosine Similarity
+
+Once the document and query vectors are constructed, the degree of similarity between them must be determined. While the dot product is the simplest method, the **Cosine Similarity** is the most widely used index, as it normalizes the vector length, avoiding distortions caused by differences in document size.
+
+The similarity index between a query $Q$ and a document $D_i$ is calculated as the cosine of the angle $\theta$ between their vectors:
+
+$\text{Similarity}(Q, D_i) = \cos(\theta) = \frac{Q \cdot D_i}{\|Q\| \cdot \|D_i\|}$.
+
+Documents with the highest degree of similarity will have the highest **score**. These high-scoring documents are the ones returned by the search engine.
+
 ![](SimCos1.png)
-
-# Similaridad coseno <a name = "id5"> </a>
 ![](SimCos2.png)
 ![](SimCosAngle.png)
 
-Los documentos con mayor grado de similitud son aquellos que mayor **score** tendrán. Los documentos de mayor **score** serán los devueltos por el buscador.
 
-Si desea seguir documentadose sobre esto puede dirigirse a: https://es.wikipedia.org/wiki/Modelo_vectorial_generalizado
+> **Further Reading:** For more details on this model, refer to the Wikipedia article (available in Spanish and English): [Modelo vectorial generalizado](https://es.wikipedia.org/wiki/Modelo_vectorial_generalizado)
 
-# Sobre la Ingeniería de Software <a name = "id6"> </a>
-#### Para implementar el algoritmo de búqueda hemos creado e implementado varias clases fundamentales. Cada clase es una abstracción de los componentes del motor de búsqueda.
+-----
 
-+ `DataFile` es una clase creada como representación de lo que es un documento.
-+ `DataFolder` por su parte, representa una carpeta o contenedor de documentos (o DataFiles), con sus propiedades y métodos proprios.
-+ `Query` es la clase que representa y procesa la consulta realizada por el usuario.
-+ `Tools` Contiene herramientas (métodos) para procesar texto.
-+ `Engine` es una clase base que se encarga de manejar los objetos de tipo `DataFile`, `DataFolder` y `Query` para la obtención de objetos de tipo `SearItem` y posteriormente de tipo `SearchResult` que son los devueltos al usuario. 
-+ `SearchItem` representa objetos que son posibles documentos que coinciden al menos parcialmente con la consulta en `Query`.
-+ `SearchResult` representa un objeto que contiene los resultados de la búsqueda realizada por el usuario.
-+ `Moogle` contiene el método `Moogle.Query`. Este método devuelve un objeto de tipo `SearchResult`.
+## Core Engine Components
 
-# Ejemplos del proyecto en funcionamiento <a name = "id7"> </a>
+The search algorithm is implemented using several core classes, each abstracting a fundamental component of the engine:
+
+- `DataFile`: Represents a single document, storing its path, name, and term frequency data.
+- `DataFolder`: Represents a collection or container of documents (`DataFiles`).
+- `Query`: Encapsulates and processes the user's search query, turning it into a query vector.
+- `Tools`: A utility class containing static methods for text processing (tokenization, stemming, etc.).
+- `Engine`: The base class responsible for managing `DataFile`, `DataFolder`, and `Query` objects to produce structured results.
+- `SearchItem`: Represents a potential document match, containing the document reference and its calculated relevance score.
+- `SearchResult`: The object returned to the user, containing the ordered list of `SearchItem` objects and any related metadata.
+- `Moogle`: Contains the primary entry point method, `Moogle.Query()`, which orchestrates the search and returns a `SearchResult` object.
+
+-----
+
+## Examples
 ![](MoogleInterface0.png)
 ![](MoogleInterface1.png)
 ![](MoogleInterface2.png)
 
-# Fuentes que utilicé <a name = "id8"> </a>
-- ##### Wikipedia
-- ##### Microsoft
+-----
 
-# Autor
-##### Hecho por Lianny Revé Valdivieso
-##### Grupo C111
+## Author
+* Rlianny - revelianny10@gmail.com
+
 
 
